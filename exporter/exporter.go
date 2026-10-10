@@ -48,6 +48,7 @@ type Exporter struct {
 type Opts struct {
 	CompatibleMode         bool
 	DirectConnect          bool
+	DisableOCSPCheck       bool
 	ConnectTimeoutMS       int
 	DisableDefaultRegistry bool
 	DiscoveringMode        bool
@@ -428,6 +429,10 @@ func connect(ctx context.Context, opts *Opts) (*mongo.Client, error) {
 
 	clientOpts.SetDirect(opts.DirectConnect)
 	clientOpts.SetAppName("mongodb_exporter")
+
+	if opts.DisableOCSPCheck {
+		disableOCSPCheck(clientOpts)
+	}
 
 	if clientOpts.ConnectTimeout == nil {
 		connectTimeout := time.Duration(opts.ConnectTimeoutMS) * time.Millisecond

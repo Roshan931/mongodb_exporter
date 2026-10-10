@@ -53,10 +53,10 @@ type GlobalFlags struct {
 	TimeoutOffset         int      `default:"1"                                                                           help:"Offset to subtract from the request timeout in seconds"                                                                                  name:"web.timeout-offset"`
 	LogLevel              string   `default:"error"                                                                       enum:"debug,info,warn,error,fatal"                                                                                                             help:"Only log messages with the given severity or above. Valid levels: [debug, info, warn, error, fatal]" name:"log.level"`
 	ConnectTimeoutMS      int      `default:"5000"                                                                        help:"Connection timeout in milliseconds"                                                                                                      name:"mongodb.connect-timeout-ms"`
+	TLSDisableOCSPCheck   bool     `help:"Skip the OCSP revocation check when connecting to MongoDB over TLS"             name:"mongodb.tls-disable-ocsp"`
 
 	EnableExporterMetrics          bool `default:"True"                                                            help:"Enable collecting metrics about the exporter itself (process_*, go_*)" name:"collector.exporter-metrics" negatable:""`
-	EnableDiagnosticData           bool `help:"Enable collecting metrics from getDiagnosticData"                   name:"collector.diagnosticdata"`
-	EnableDiagnosticDataHistograms bool `help:"Enable collecting histogram bucket metrics from getDiagnosticData"  name:"collector.diagnosticdata-histograms"`
+	EnableDiagnosticData           bool `help:"Enable collecting metrics from getDiagnosticData"                   name:"collector.diagnosticdata"`	EnableDiagnosticDataHistograms bool `help:"Enable collecting histogram bucket metrics from getDiagnosticData"  name:"collector.diagnosticdata-histograms"`
 	EnableReplicasetStatus         bool `help:"Enable collecting metrics from replSetGetStatus"                    name:"collector.replicasetstatus"`
 	EnableReplicasetConfig         bool `help:"Enable collecting metrics from replSetGetConfig"                    name:"collector.replicasetconfig"`
 	EnableDBStats                  bool `help:"Enable collecting metrics from dbStats"                             name:"collector.dbstats"`
@@ -172,9 +172,9 @@ func buildExporter(opts GlobalFlags, uri string, log *slog.Logger) *exporter.Exp
 		NodeName:              nodeName,
 		GlobalConnPool:        opts.GlobalConnPool,
 		DirectConnect:         opts.DirectConnect,
+		DisableOCSPCheck:      opts.TLSDisableOCSPCheck,
 		ConnectTimeoutMS:      opts.ConnectTimeoutMS,
 		TimeoutOffset:         opts.TimeoutOffset,
-
 		DisableDefaultRegistry:         !opts.EnableExporterMetrics,
 		EnableDiagnosticData:           opts.EnableDiagnosticData,
 		EnableDiagnosticDataHistograms: opts.EnableDiagnosticDataHistograms,
